@@ -6,3 +6,4 @@ python-dotenv==1.0.1
 Flask-Mail==0.10.0
 requests==2.32.3
 Flask-WTF
+gunicorn
