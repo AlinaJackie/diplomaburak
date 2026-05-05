@@ -99,11 +99,13 @@ def _coerce_next_url(target):
     if not target:
         return None
 
+    # Block protocol-relative URLs like //evil.com
     if target.startswith("//"):
         return None
 
     parts = urlsplit(target)
 
+    # Full URL (e.g. http://host/checkout) -> allow only same-host.
     if parts.scheme and parts.netloc:
         if parts.netloc != request.host:
             return None
@@ -113,6 +115,7 @@ def _coerce_next_url(target):
             path = f"{path}?{parts.query}"
         return path
 
+    # Relative URL -> allow only absolute-path redirects.
     if target.startswith("/"):
         return target
 
@@ -165,8 +168,14 @@ def create_app():
     app.config["MAX_CONTENT_LENGTH"] = 15 * 1024 * 1024
     app.config["WTF_CSRF_TIME_LIMIT"] = 7200
 
-    os.makedirs(os.path.join(app.config["UPLOAD_FOLDER"], "restaurants"), exist_ok=True)
-    os.makedirs(os.path.join(app.config["UPLOAD_FOLDER"], "menu"), exist_ok=True)
+    os.makedirs(
+        os.path.join(app.config["UPLOAD_FOLDER"], "restaurants"),
+        exist_ok=True,
+    )
+    os.makedirs(
+        os.path.join(app.config["UPLOAD_FOLDER"], "menu"),
+        exist_ok=True,
+    )
 
     db.init_app(app)
     Migrate(app, db)
@@ -174,6 +183,10 @@ def create_app():
     mail.init_app(app)
     csrf.init_app(app)
 
+    @app.before_first_request
+    def create_tables():
+        db.create_all()
+        
     @login_manager.user_loader
     def load_user(user_id):
         return db.session.get(User, int(user_id))
@@ -186,28 +199,55 @@ def create_app():
         next_url = _coerce_next_url(request.url) or "/"
         session["next_url"] = next_url
 
+        if (request.path or "").startswith("/checkout"):
+            flash(
+                "Для оформлення замовлення увійдіть або зареєструйтесь",
+                "info",
+            )
+        else:
+            flash("Будь ласка, увійдіть, щоб продовжити", "info")
+
         return redirect(url_for(login_manager.login_view, next=next_url))
 
     @app.errorhandler(CSRFError)
     def handle_csrf_error(error):
         if _wants_json_error_response():
-            return _json_error_response(400)
-        return ("CSRF error", 400)
+            return _json_error_response(
+                400,
+                message=(
+                    "Запит не пройшов перевірку безпеки. "
+                    "Оновіть сторінку та спробуйте ще раз"
+                ),
+                details=getattr(error, "description", None),
+            )
+
+        return (
+            "Запит не пройшов перевірку безпеки. Оновіть сторінку та спробуйте ще раз",
+            400,
+        )
 
     @app.errorhandler(HTTPException)
     def handle_http_exception(error):
         if _wants_json_error_response():
-            return _json_error_response(error.code or 500)
+            description = getattr(error, "description", None)
+            default_message = HTTP_ERROR_MESSAGES.get(error.code or 500)
+            message = description if description and description != error.name else default_message
+            return _json_error_response(
+                error.code or 500,
+                message=message,
+                details=error.name if description and description != error.name else None,
+            )
+
         return error
 
     @app.errorhandler(Exception)
     def handle_unexpected_exception(error):
         if _wants_json_error_response():
-            app.logger.exception("ERROR")
+            app.logger.exception("UNHANDLED API ERROR")
             return _json_error_response(500)
 
-        app.logger.exception("ERROR")
-        return ("Internal error", 500)
+        app.logger.exception("UNHANDLED APP ERROR")
+        return (HTTP_ERROR_MESSAGES[500], 500)
 
     @app.cli.command("create-admin")
     def create_admin_command():
@@ -222,10 +262,6 @@ def create_app():
     app.register_blueprint(partner_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(cart_bp)
-
-    # 💥 FIX: створення таблиць на Render
-    with app.app_context():
-        db.create_all()
 
     return app
 
