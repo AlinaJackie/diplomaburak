@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block title %}Кабінет партнера{% endblock %}
+
+{% block content %}
+<section class="partner-layout">
+    <aside class="partner-sidebar">
+        <div class="partner-sidebar__head">
+            <h2>Партнер</h2>
+            <p>Керування закладами та замовленнями</p>
+        </div>
+
+        <button class="partner-btn partner-btn--primary partner-sidebar__add-btn" id="openRestaurantModalBtn">
+            Додати ресторан
+        </button>
+
+        <nav class="partner-sidebar__nav">
+            <button class="partner-side-link active" data-partner-tab="overview">
+                Огляд
+            </button>
+            <button class="partner-side-link" data-partner-tab="restaurants">
+                Мої ресторани
+            </button>
+            <button class="partner-side-link" data-partner-tab="menu">
+                Страви
+            </button>
+            <button class="partner-side-link" data-partner-tab="orders">
+                Замовлення
+            </button>
+            <button class="partner-side-link" data-partner-tab="stats">
+                Статистика
+            </button>
+        </nav>
+    </aside>
+
+    <div class="partner-main">
+        <div class="partner-page-head">
+            <h1>Кабінет партнера</h1>
+            <p>
+                Тут ви можете керувати ресторанами, додавати страви, переглядати замовлення
+                та відстежувати основні показники роботи.
+            </p>
+        </div>
+
+        <div class="partner-panel active" id="partner-tab-overview">
+            <div class="partner-stats">
+                <div class="partner-stat-card">
+                    <span>Мої ресторани</span>
+                    <strong id="restaurantsCount">0</strong>
+                </div>
+                <div class="partner-stat-card">
+                    <span>Страв у меню</span>
+                    <strong id="menuItemsCount">0</strong>
+                </div>
+                <div class="partner-stat-card">
+                    <span>Активні замовлення</span>
+                    <strong id="activeOrdersCount">0</strong>
+                </div>
+                <div class="partner-stat-card">
+                    <span>Виконані замовлення</span>
+                    <strong id="completedOrdersCount">0</strong>
+                </div>
+            </div>
+
+            <div class="partner-overview-cards">
+                <div class="partner-info-box">
+                    <h3>Що можна робити</h3>
+                    <p>Додавати ресторани, редагувати інформацію про заклад, завантажувати фото та керувати меню.</p>
+                </div>
+
+                <div class="partner-info-box">
+                    <h3>Робота із замовленнями</h3>
+                    <p>Переглядайте нові замовлення, змінюйте їх статус і контролюйте виконання.</p>
+                </div>
+
+                <div class="partner-info-box">
+                    <h3>Швидкий старт</h3>
+                    <p>Спочатку додайте ресторан, потім наповніть меню стравами, і після цього зможете працювати із
+                        замовленнями.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="partner-panel" id="partner-tab-restaurants">
+            <div class="partner-section-head">
+                <div>
+                    <h2>Мої ресторани</h2>
+                    <p class="partner-section-subtitle">
+                        Список усіх ваших закладів, які підключені до FoodGo.
+                    </p>
+                </div>
+                <button class="partner-btn partner-btn--primary" id="openRestaurantModalBtnSecondary">
+                    Додати ресторан
+                </button>
+            </div>
+
+            <div id="restaurantsEmpty" class="partner-empty hidden">
+                У вас ще немає ресторанів.
+            </div>
+
+            <div id="restaurantsGrid" class="partner-restaurants-grid"></div>
+        </div>
+
+        <div class="partner-panel" id="partner-tab-menu">
+            <div class="partner-section-head">
+                <div>
+                    <h2>Страви</h2>
+                    <p class="partner-section-subtitle">
+                        Оберіть ресторан і керуйте його меню.
+                    </p>
+                </div>
+
+                <div class="partner-menu-tools">
+                    <select id="menuRestaurantSelect">
+                        <option value="">Оберіть ресторан</option>
+                    </select>
+                    <button class="partner-btn partner-btn--primary" id="openDishModalBtn" disabled>
+                        Додати страву
+                    </button>
+                </div>
+            </div>
+
+            <div id="menuEmpty" class="partner-empty">
+                Оберіть ресторан, щоб переглянути меню.
+            </div>
+
+            <div id="menuList" class="partner-menu-grid"></div>
+        </div>
+
+        <div class="partner-panel" id="partner-tab-orders">
+            <div class="partner-section-head">
+                <div>
+                    <h2>Замовлення</h2>
+                    <p class="partner-section-subtitle">
+                        Тут відображаються всі замовлення ваших ресторанів.
+                    </p>
+                </div>
+            </div>
+
+            <div id="ordersEmpty" class="partner-empty hidden">
+                Замовлень поки немає.
+            </div>
+
+            <div class="partner-orders-wrap">
+                <table class="partner-orders-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Ресторан</th>
+                            <th>Клієнт</th>
+                            <th>Сума</th>
+                            <th>Дата</th>
+                            <th>Дія</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="partner-panel" id="partner-tab-stats">
+            <div class="partner-section-head">
+                <div>
+                    <h2>Статистика</h2>
+                    <p class="partner-section-subtitle">
+                        Основні показники роботи ваших закладів.
+                    </p>
+                </div>
+            </div>
+
+            <div class="partner-stats partner-stats--secondary">
+                <div class="partner-stat-card">
+                    <span>Замовлень сьогодні</span>
+                    <strong id="ordersTodayCount">0</strong>
+                </div>
+                <div class="partner-stat-card">
+                    <span>Замовлень за 7 днів</span>
+                    <strong id="ordersWeekCount">0</strong>
+                </div>
+                <div class="partner-stat-card">
+                    <span>Сумарний дохід</span>
+                    <strong id="totalRevenueCount">0 грн</strong>
+                </div>
+                <div class="partner-stat-card">
+                    <span>Середній чек</span>
+                    <strong id="averageCheckCount">0 грн</strong>
+                </div>
+            </div>
+
+            <div class="partner-section partner-section--compact partner-top-dishes-section">
+                <div class="partner-section-head">
+                    <h2>Найпопулярніші страви</h2>
+                </div>
+                <div id="topDishesList" class="analytics-list"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="partner-modal hidden" id="restaurantModal">
+    <div class="partner-modal__backdrop" data-close-modal="restaurantModal"></div>
+    <div class="partner-modal__dialog">
+        <div class="partner-modal__header">
+            <h3>Додати ресторан</h3>
+            <button type="button" class="partner-close-btn" data-close-modal="restaurantModal">×</button>
+        </div>
+
+        <form id="restaurantForm" class="partner-form-grid">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="partner-form-group">
+                <label for="restaurantName">Назва ресторану</label>
+                <input id="restaurantName" type="text" name="name" required>
+            </div>
+
+            <div class="partner-form-group">
+                <label for="restaurantCity">Місто</label>
+                <select id="restaurantCity" name="city" required>
+                    <option value="">Оберіть місто</option>
+                    <option value="ivano-frankivsk">Івано-Франківськ</option>
+                    <option value="lviv">Львів</option>
+                    <option value="chernivtsi">Чернівці</option>
+                </select>
+            </div>
+            <div class="partner-form-group partner-form-group--full">
+                <label for="restaurantAddress">Адреса ресторану</label>
+                <input id="restaurantAddress" type="text" name="address" placeholder="Наприклад: вул. Незалежності, 15"
+                    required>
+            </div>
+            <div class="partner-form-group partner-form-group--full">
+                <label for="restaurantDescription">Опис</label>
+                <textarea id="restaurantDescription" name="description" rows="4"></textarea>
+            </div>
+
+            <div class="partner-form-group">
+                <label for="restaurantCategories">Категорії</label>
+                <input id="restaurantCategories" type="text" name="categories" placeholder="піца, суші, бургери">
+            </div>
+
+            <div class="partner-form-group">
+                <label for="restaurantImage">Фото</label>
+                <input id="restaurantImage" type="file" name="image_file" accept="image/*">
+            </div>
+
+            <div class="partner-form-group">
+                <label for="restaurantOpeningTime">Працює з</label>
+                <input type="time" id="restaurantOpeningTime" name="opening_time" value="09:00" required>
+            </div>
+
+            <div class="partner-form-group">
+                <label for="restaurantClosingTime">Працює до</label>
+                <input type="time" id="restaurantClosingTime" name="closing_time" value="22:00" required>
+            </div>
+
+            <div class="partner-form-group">
+                <label for="restaurantMinimumOrderAmount">Мінімальна сума замовлення, грн</label>
+                <input type="number" id="restaurantMinimumOrderAmount" name="minimum_order_amount" min="0" value="200"
+                    required />
+            </div>
+
+            <div class="partner-form-group form-checkbox">
+                <label>
+                    <input type="checkbox" id="restaurantIsActive" name="is_active" checked />
+                    Ресторан активний
+                </label>
+            </div>
+
+            <div class="partner-form-actions partner-form-group--full">
+                <button type="button" class="partner-btn" data-close-modal="restaurantModal">Скасувати</button>
+                <button type="submit" class="partner-btn partner-btn--primary">Зберегти</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="partner-modal hidden" id="dishModal">
+    <div class="partner-modal__backdrop" data-close-modal="dishModal"></div>
+    <div class="partner-modal__dialog">
+        <div class="partner-modal__header">
+            <h3>Додати страву</h3>
+            <button type="button" class="partner-close-btn" data-close-modal="dishModal">×</button>
+        </div>
+
+        <form id="dishForm" class="partner-form-grid">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="partner-form-group">
+                <label for="dishName">Назва страви</label>
+                <input id="dishName" type="text" name="name" required>
+            </div>
+
+            <div class="partner-form-group">
+                <label for="dishPrice">Ціна</label>
+                <input id="dishPrice" type="number" name="price" min="1" required>
+            </div>
+
+            <div class="partner-form-group">
+                <label for="dishWeight">Вага</label>
+                <input id="dishWeight" type="text" name="weight" placeholder="300 г">
+            </div>
+
+            <div class="partner-form-group">
+                <label for="dishImage">Фото</label>
+                <input id="dishImage" type="file" name="image_file" accept="image/*">
+            </div>
+
+            <div class="partner-form-group partner-form-group--full">
+                <label for="dishDescription">Опис</label>
+                <textarea id="dishDescription" name="description" rows="4"></textarea>
+            </div>
+
+            <div class="partner-form-group form-checkbox">
+                <label>
+                    <input type="checkbox" id="dishIsAvailable" name="is_available" checked />
+                    Страва доступна для замовлення
+                </label>
+            </div>
+
+            <div class="partner-form-actions partner-form-group--full">
+                <button type="button" class="partner-btn" data-close-modal="dishModal">Скасувати</button>
+                <button type="submit" class="partner-btn partner-btn--primary">Зберегти</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script defer src="{{ url_for('static', filename='js/partner-dashboard.js') }}"></script>
+{% endblock %}

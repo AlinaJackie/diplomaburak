@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Оформлення замовлення – FoodGo{% endblock %}
+
+{% block content %}
+<h1>Оформлення замовлення</h1>
+
+<form class="form" id="checkout-form">
+  <h2 class="checkout-subtitle">Дані доставки</h2>
+
+  <div class="form-row">
+    <label for="ch-name">Ім’я та прізвище</label>
+    <input id="ch-name" type="text" placeholder="Іван Іванов" value="{{ current_user.full_name if current_user.is_authenticated else '' }}" required />
+  </div>
+
+  <div class="form-row">
+    <label for="ch-phone">Телефон</label>
+    <input id="ch-phone" type="tel" placeholder="+380XXXXXXXXX" value="{{ current_user.phone if current_user.is_authenticated else '' }}" required />
+  </div>
+
+  <div class="form-row">
+    <label for="ch-city">Місто</label>
+    {% set checkout_city = (current_user.city if current_user.is_authenticated else '') %}
+    <select id="ch-city" required>
+      <option value="ivano-frankivsk" {% if checkout_city in ['Івано-Франківськ', 'ivano-frankivsk'] %}selected{% endif %}>Івано-Франківськ</option>
+      <option value="lviv" {% if checkout_city in ['Львів', 'lviv'] %}selected{% endif %}>Львів</option>
+      <option value="chernivtsi" {% if checkout_city in ['Чернівці', 'chernivtsi'] %}selected{% endif %}>Чернівці</option>
+    </select>
+  </div>
+
+  <div class="form-row">
+    <label for="ch-delivery-type">Спосіб отримання</label>
+    <select id="ch-delivery-type" required>
+      <option value="delivery">Доставка</option>
+      <option value="pickup">Самовивіз</option>
+    </select>
+  </div>
+
+  <div class="form-row" id="address-row">
+    <label for="ch-address">Адреса</label>
+    <input id="ch-address" type="text" placeholder="Вулиця, будинок, квартира" value="{{ ((current_user.street or '') ~ (', ' if current_user.street and current_user.house else '') ~ (current_user.house or '')) if current_user.is_authenticated else '' }}" />
+  </div>
+
+  <div class="form-row">
+    <label for="ch-comment">Коментар до замовлення</label>
+    <input id="ch-comment" type="text" placeholder="Код домофона, поверх..." />
+  </div>
+
+  <div class="form-row">
+    <label for="ch-payment">Спосіб оплати</label>
+    <select id="ch-payment" required>
+      <option value="cash">Готівка</option>
+      <option value="card_on_delivery">Карткою при отриманні</option>
+    </select>
+  </div>
+
+  <div class="form-row" id="ch-summary"></div>
+
+  <div class="form-row form-row--spaced">
+    <button class="btn btn-primary btn-block" type="submit">
+      Підтвердити замовлення
+    </button>
+  </div>
+
+  <div class="form-row">
+    <div id="checkout-result"></div>
+    <div class="checkout-preview-note">
+      Вартість доставки та орієнтовний час прибуття розраховуються автоматично після заповнення даних.
+      Доставка доступна в Івано-Франківську, Львові та Чернівцях.
+      Якщо зовнішній маршрутний сервіс недоступний, система показує коректний орієнтовний розрахунок.
+    </div>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}
+<script defer src="{{ url_for('static', filename='js/checkout.js') }}"></script>
+{% endblock %}

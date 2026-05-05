@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Мої замовлення – FoodGo{% endblock %}
+
+{% block content %}
+<section>
+  <h1>Мої замовлення</h1>
+  <p class="restaurant-meta">Тут відображаються всі ваші замовлення та їх поточний статус.</p>
+</section>
+
+<section class="orders-page">
+  <div id="my-orders-list" class="my-orders-list"></div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script defer src="{{ url_for('static', filename='js/my-orders.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}Особистий кабінет{% endblock %}
+
+{% block content %}
+<datalist id="deliveryCitiesList">
+    <option value="Івано-Франківськ"></option>
+    <option value="Львів"></option>
+    <option value="Чернівці"></option>
+</datalist>
+<div class="user-cabinet-layout" id="userCabinetRoot"
+    data-fav-restaurants="{{ current_user.favorite_restaurants|length }}"
+    data-fav-items="{{ current_user.favorite_menu_items|length }}"
+    data-reviews-count="{{ current_user.reviews|length }}">
+    <aside class="user-cabinet-sidebar">
+        <div class="user-cabinet-sidebar-title">Кабінет</div>
+
+        <nav class="user-cabinet-nav">
+            <a href="#" class="user-cabinet-nav-link active" data-tab-link="overview">Огляд</a>
+            <a href="#" class="user-cabinet-nav-link" data-tab-link="personal">Особиста інформація</a>
+            <a href="#" class="user-cabinet-nav-link" data-tab-link="addresses">Адреси доставки</a>
+            <a href="#" class="user-cabinet-nav-link" data-tab-link="orders">Замовлення</a>
+            <a href="#" class="user-cabinet-nav-link" data-tab-link="reviews">Відгуки та вподобання</a>
+            <a href="#" class="user-cabinet-nav-link" data-tab-link="notifications">Сповіщення</a>
+            <a href="#" class="user-cabinet-nav-link" data-tab-link="security">Безпека</a>
+            <a href="#" class="user-cabinet-nav-link" data-tab-link="support">Підтримка</a>
+        </nav>
+    </aside>
+
+    <div class="user-cabinet-main">
+        <section class="user-cabinet-section" data-tab="overview">
+            <h1 class="user-cabinet-page-title">Особистий кабінет</h1>
+
+            <div class="user-cabinet-hero">
+                <div>
+                    <div class="user-cabinet-hero-kicker">FoodGo</div>
+                    <h2 class="user-cabinet-hero-title">{{ current_user.full_name or "Користувач" }}</h2>
+                    <p class="user-cabinet-hero-text">
+                        Тут ви можете редагувати особисті дані, адреси доставки, переглядати історію
+                        замовлень, залишати відгуки та стежити за сповіщеннями.
+                    </p>
+                </div>
+            </div>
+
+            <div class="user-cabinet-stats-grid">
+                <div class="user-cabinet-stat-card">
+                    <div class="user-cabinet-stat-label">Усього замовлень</div>
+                    <div class="user-cabinet-stat-value" id="cabinetTotalOrders">0</div>
+                </div>
+
+                <div class="user-cabinet-stat-card">
+                    <div class="user-cabinet-stat-label">Активні замовлення</div>
+                    <div class="user-cabinet-stat-value" id="cabinetActiveOrders">0</div>
+                </div>
+
+                <div class="user-cabinet-stat-card">
+                    <div class="user-cabinet-stat-label">Витрачено всього</div>
+                    <div class="user-cabinet-stat-value" id="cabinetTotalSpent">0 грн</div>
+                </div>
+
+                <div class="user-cabinet-stat-card">
+                    <div class="user-cabinet-stat-label">Бонусні бали</div>
+                    <div class="user-cabinet-stat-value" id="cabinetBonusPoints">0</div>
+                </div>
+            </div>
+
+            <div class="user-cabinet-bottom-grid">
+                <div class="user-cabinet-info-card">
+                    <h3 class="user-cabinet-card-title">Останні замовлення</h3>
+                    <div id="cabinetRecentOrders" class="analytics-list">
+                        <div class="analytics-empty">Замовлення завантажуються...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="user-cabinet-section is-initially-hidden" data-tab="personal">
+            <h2 class="user-cabinet-section-title">Особиста інформація</h2>
+
+            <div class="user-cabinet-form-card">
+                <div class="user-cabinet-form-grid">
+                    <div class="user-cabinet-form-group user-cabinet-form-group-full">
+                        <label for="profileFullName">ПІБ</label>
+                        <input type="text" id="profileFullName" value="{{ current_user.full_name or '' }}">
+                    </div>
+
+                    <div class="user-cabinet-form-group">
+                        <label>Email</label>
+                        <input type="text" value="{{ current_user.email or '' }}" disabled>
+                    </div>
+
+                    <div class="user-cabinet-form-group">
+                        <label>Телефон</label>
+                        <input type="text" value="{{ current_user.phone or '' }}" disabled>
+                    </div>
+
+                    <div class="user-cabinet-form-group">
+                        <label for="profileCity">Місто</label>
+                        <input type="text" id="profileCity" list="deliveryCitiesList" value="{{ current_user.city or '' }}">
+                        <small class="form-hint">Для оформлення доставки сервіс зараз підтримує Івано-Франківськ, Львів і Чернівці.</small>
+                    </div>
+
+                    <div class="user-cabinet-form-group">
+                        <label for="profileStreet">Вулиця</label>
+                        <input type="text" id="profileStreet" value="{{ current_user.street or '' }}">
+                    </div>
+
+                    <div class="user-cabinet-form-group">
+                        <label for="profileHouse">Будинок / квартира</label>
+                        <input type="text" id="profileHouse" value="{{ current_user.house or '' }}">
+                    </div>
+
+                    <div class="user-cabinet-form-group user-cabinet-form-group-full">
+                        <label for="profileExtraInfo">Додаткова інформація</label>
+                        <textarea id="profileExtraInfo" rows="4">{{ current_user.extra_info or '' }}</textarea>
+                    </div>
+                </div>
+
+                <div class="user-cabinet-actions">
+                    <button class="btn btn-primary" id="saveProfileBtn" type="button">Зберегти зміни</button>
+                </div>
+
+                <p id="profileSaveResult" class="form-result"></p>
+            </div>
+        </section>
+
+        <section class="user-cabinet-section is-initially-hidden" data-tab="addresses">
+            <h2 class="user-cabinet-section-title">Адреси доставки</h2>
+
+            <div class="user-cabinet-two-col">
+                <div class="user-cabinet-info-card">
+                    <h3 class="user-cabinet-card-title">Поточна адреса</h3>
+
+                    <div class="address-card">
+                        <p><strong>Місто:</strong> <span id="addressPreviewCity">{{ current_user.city or 'Не вказано'
+                                }}</span></p>
+                        <p><strong>Вулиця:</strong> <span id="addressPreviewStreet">{{ current_user.street or 'Не
+                                вказано' }}</span></p>
+                        <p><strong>Будинок / квартира:</strong> <span id="addressPreviewHouse">{{ current_user.house or
+                                'Не вказано' }}</span></p>
+                        <p><strong>Коментар:</strong> <span id="addressPreviewExtra">{{ current_user.extra_info or
+                                'Немає' }}</span></p>
+                    </div>
+                </div>
+
+                <div class="user-cabinet-form-card">
+                    <h3 class="user-cabinet-card-title">Редагування адреси</h3>
+
+                    <div class="user-cabinet-form-grid">
+                        <div class="user-cabinet-form-group">
+                            <label for="addressCity">Місто</label>
+                            <input type="text" id="addressCity" list="deliveryCitiesList" value="{{ current_user.city or '' }}">
+                            <small class="form-hint">Оберіть одне з підтримуваних міст для швидшого оформлення замовлень.</small>
+                        </div>
+
+                        <div class="user-cabinet-form-group">
+                            <label for="addressStreet">Вулиця</label>
+                            <input type="text" id="addressStreet" value="{{ current_user.street or '' }}">
+                        </div>
+
+                        <div class="user-cabinet-form-group">
+                            <label for="addressHouse">Будинок / квартира</label>
+                            <input type="text" id="addressHouse" value="{{ current_user.house or '' }}">
+                        </div>
+
+                        <div class="user-cabinet-form-group user-cabinet-form-group-full">
+                            <label for="addressExtraInfo">Коментар для доставки</label>
+                            <textarea id="addressExtraInfo" rows="4">{{ current_user.extra_info or '' }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="user-cabinet-actions">
+                        <button class="btn btn-primary" id="saveAddressBtn" type="button">Зберегти адресу</button>
+                    </div>
+
+                    <p id="addressSaveResult" class="form-result"></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="user-cabinet-section is-initially-hidden" data-tab="orders">
+            <h2 class="user-cabinet-section-title">Замовлення</h2>
+
+            <div id="my-orders-list" class="my-orders-list">
+                <div class="analytics-empty">Замовлення завантажуються...</div>
+            </div>
+        </section>
+
+        <section class="user-cabinet-section is-initially-hidden" data-tab="reviews">
+            <h2 class="user-cabinet-section-title">Відгуки та вподобання</h2>
+
+            <div class="user-cabinet-stats-grid user-cabinet-stats-grid--three">
+                <div class="user-cabinet-stat-card">
+                    <div class="user-cabinet-stat-label">Улюблені ресторани</div>
+                    <div class="user-cabinet-stat-value" id="cabinetFavoriteRestaurantsCount">{{ current_user.favorite_restaurants|length }}</div>
+                </div>
+
+                <div class="user-cabinet-stat-card">
+                    <div class="user-cabinet-stat-label">Улюблені страви</div>
+                    <div class="user-cabinet-stat-value" id="cabinetFavoriteItemsCount">{{ current_user.favorite_menu_items|length }}</div>
+                </div>
+
+                <div class="user-cabinet-stat-card">
+                    <div class="user-cabinet-stat-label">Мої відгуки</div>
+                    <div class="user-cabinet-stat-value" id="cabinetReviewsCountBig">{{ current_user.reviews|length }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-cabinet-info-card">
+                <h3 class="user-cabinet-card-title">Останні відгуки</h3>
+                <h3 class="user-cabinet-card-title">Улюблені ресторани</h3>
+                <div id="cabinetFavoriteRestaurantsList" class="analytics-list">
+                    <div class="analytics-empty">Улюблені ресторани завантажуються...</div>
+                </div>
+
+                <h3 class="user-cabinet-card-title">Останні відгуки</h3>
+                <div id="cabinetReviewsList" class="analytics-list">
+                    <div class="analytics-empty">Відгуки завантажуються...</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="user-cabinet-section is-initially-hidden" data-tab="notifications">
+            <div class="user-cabinet-section-header">
+                <h2 class="user-cabinet-section-title">Сповіщення</h2>
+                <div class="user-cabinet-section-header-actions">
+                    <div class="user-cabinet-section-badge">Непрочитані: <span id="cabinetUnreadNotifications">0</span></div>
+                    <button class="btn btn-outline" id="markNotificationsReadBtn" type="button">Позначити все як прочитане</button>
+                </div>
+            </div>
+
+            <div class="user-cabinet-info-card">
+                <div id="cabinetNotificationsList" class="analytics-list">
+                    <div class="analytics-empty">Сповіщення завантажуються...</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="user-cabinet-section is-initially-hidden" data-tab="security">
+            <h2 class="user-cabinet-section-title">Безпека</h2>
+
+            <div class="user-cabinet-two-col">
+                <div class="user-cabinet-form-card">
+                    <h3 class="user-cabinet-card-title">Зміна пароля</h3>
+
+                    <div class="user-cabinet-form-grid">
+                        <div class="user-cabinet-form-group user-cabinet-form-group-full">
+                            <label for="currentPassword">Поточний пароль</label>
+                            <input type="password" id="currentPassword">
+                        </div>
+
+                        <div class="user-cabinet-form-group user-cabinet-form-group-full">
+                            <label for="newPassword">Новий пароль</label>
+                            <input type="password" id="newPassword">
+                        </div>
+                    </div>
+
+                    <div class="user-cabinet-actions">
+                        <button class="btn btn-primary" id="changePasswordBtn" type="button">Змінити пароль</button>
+                    </div>
+
+                    <p id="passwordSaveResult" class="form-result"></p>
+                </div>
+
+                <div class="user-cabinet-info-card">
+                    <h3 class="user-cabinet-card-title">Рекомендації</h3>
+                    <ul class="user-cabinet-tips">
+                        <li>Використовуйте пароль не менше 8 символів.</li>
+                        <li>Не передавайте нікому свої дані входу.</li>
+                        <li>Регулярно перевіряйте адресу доставки.</li>
+                        <li>Слідкуйте за сповіщеннями після оформлення замовлення.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="user-cabinet-section is-initially-hidden" data-tab="support">
+            <h2 class="user-cabinet-section-title">Підтримка</h2>
+
+            <div class="user-cabinet-info-card">
+                <h3 class="user-cabinet-card-title">Контакти</h3>
+                <p class="user-cabinet-card-text"><strong>Телефон:</strong> +380 800 000 000</p>
+                <p class="user-cabinet-card-text"><strong>Email:</strong> support@foodgo.ua</p>
+                <p class="user-cabinet-card-text"><strong>Графік:</strong> щодня з 09:00 до 21:00</p>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script defer src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}

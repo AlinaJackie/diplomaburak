@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}FoodGo — Замовлення їжі онлайн{% endblock %}
+
+{% block content %}
+<section class="hero hero--home">
+  <div class="hero-text">
+    <div class="hero-badge">FoodGo</div>
+    <h1>Замовляй їжу швидко та зручно</h1>
+    <p>
+      Обирай заклади, переглядай меню та оформлюй замовлення онлайн
+      в одному місці.
+    </p>
+
+    <div class="hero-search">
+      <input type="text" id="search-input" placeholder="Введіть назву ресторану...">
+      <button class="btn btn-primary" id="search-btn" type="button">
+        Знайти
+      </button>
+    </div>
+
+    <div class="home-filters">
+      <div class="home-filter">
+        <label for="city-filter">Місто:</label>
+        <select id="city-filter">
+          <option value="">Усі міста</option>
+        </select>
+      </div>
+
+      <div class="home-filter">
+        <label for="sort-filter">Сортування:</label>
+        <select id="sort-filter">
+          <option value="name_asc">За назвою А-Я</option>
+          <option value="name_desc">За назвою Я-А</option>
+          <option value="rating_desc">За рейтингом</option>
+          <option value="min_order_asc">За мін. замовленням</option>
+        </select>
+      </div>
+
+      <div class="home-filter">
+        <label for="min-order-filter">Мін. замовлення до:</label>
+        <select id="min-order-filter">
+          <option value="">Будь-яке</option>
+          <option value="100">100 грн</option>
+          <option value="200">200 грн</option>
+          <option value="300">300 грн</option>
+          <option value="500">500 грн</option>
+        </select>
+      </div>
+
+      <label class="home-checkbox" for="open-now-filter">
+        <input type="checkbox" id="open-now-filter">
+        <span>Лише відкриті зараз</span>
+      </label>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2 class="section-title">Категорії їжі</h2>
+  <div class="categories" id="categories">
+    <button class="category-card active" data-category="">
+      <span>🍽️</span>
+      <span>Усе</span>
+    </button>
+
+    <button class="category-card" data-category="fastfood">
+      <span>🍟</span>
+      <span>Фаст-фуд</span>
+    </button>
+
+    <button class="category-card" data-category="burgers">
+      <span>🍔</span>
+      <span>Бургери</span>
+    </button>
+
+    <button class="category-card" data-category="ukrainian">
+      <span>🥟</span>
+      <span>Українська</span>
+    </button>
+
+    <button class="category-card" data-category="breakfast">
+      <span>🥐</span>
+      <span>Сніданок</span>
+    </button>
+
+    <button class="category-card" data-category="pizza">
+      <span>🍕</span>
+      <span>Піца</span>
+    </button>
+
+    <button class="category-card" data-category="sushi">
+      <span>🍣</span>
+      <span>Суші</span>
+    </button>
+
+    <button class="category-card" data-category="shawarma">
+      <span>🌯</span>
+      <span>Шаурма</span>
+    </button>
+
+    <button class="category-card" data-category="healthy">
+      <span>🥗</span>
+      <span>Корисна їжа</span>
+    </button>
+
+    <button class="category-card" data-category="grill">
+      <span>🍖</span>
+      <span>Гриль</span>
+    </button>
+
+    <button class="category-card" data-category="homemade">
+      <span>🍲</span>
+      <span>По-домашньому</span>
+    </button>
+  </div>
+</section>
+
+<section class="restaurants-section restaurants-section--home">
+  <div class="section-head">
+    <h2 class="section-title">Ресторани</h2>
+    <p class="section-subtitle">Знайди заклад, який підходить саме тобі.</p>
+  </div>
+
+  <div id="restaurants-empty" class="empty-state hidden">
+    <div class="empty-state__icon">🍽️</div>
+    <h3>Поки немає ресторанів за цими фільтрами</h3>
+    <p>Спробуй змінити категорію, місто або параметри пошуку.</p>
+  </div>
+
+  <div class="restaurants restaurants--home" id="restaurants"></div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Співпраця з FoodGo{% endblock %}
+
+{% block content %}
+<section class="partner-hero">
+  <h1>Станьте партнером FoodGo</h1>
+  <p>
+    Залиште заявку на підключення до платформи FoodGo. Після первинної перевірки
+    менеджер зв’яжеться з вами для уточнення деталей співпраці.
+  </p>
+</section>
+
+<div class="partner-benefits partner-benefits--apply">
+  <div class="partner-benefit-card">
+    <h3>Швидка заявка</h3>
+    <p>
+      Заповніть коротку форму, щоб надіслати запит на підключення до FoodGo.
+    </p>
+  </div>
+
+  <div class="partner-benefit-card">
+    <h3>Перевірка менеджером</h3>
+    <p>
+      Ми перевіримо базову інформацію та зв’яжемося з вами для підтвердження деталей.
+    </p>
+  </div>
+
+  <div class="partner-benefit-card">
+    <h3>Доступ до кабінету</h3>
+    <p>
+      Після схвалення заявки ви отримаєте доступ до кабінету партнера та зможете
+      додавати свої заклади.
+    </p>
+  </div>
+</div>
+
+{% if not current_user.is_authenticated %}
+<div class="auth-alert">
+  <p>
+    Перед подачею заявки потрібно увійти в систему або зареєструватися.
+  </p>
+  <a href="{{ url_for('auth.login_page') }}" class="btn btn-primary auth-alert-btn">
+    Вхід / Реєстрація
+  </a>
+</div>
+{% else %}
+<form class="form form--partner-apply" id="partner-apply-form" novalidate>
+  <div class="form-section-title">Контактні дані</div>
+
+  <div class="form-row form-two-cols">
+    <div>
+      <label for="pa-contact-person">Контактна особа</label>
+      <input id="pa-contact-person" name="contact_person" type="text" placeholder="Ім’я та прізвище" required />
+    </div>
+
+    <div>
+      <label for="pa-brand-name">Назва бренду / мережі / закладу</label>
+      <input id="pa-brand-name" name="brand_name" type="text" placeholder="Наприклад: FoodGo Pizza" required />
+    </div>
+  </div>
+
+  <div class="form-row form-two-cols">
+    <div>
+      <label for="pa-phone">Телефон</label>
+      <input id="pa-phone" name="phone" type="tel" placeholder="+380XXXXXXXXX" required />
+    </div>
+
+    <div>
+      <label for="pa-email">Email</label>
+      <input id="pa-email" name="email" type="email" placeholder="partner@example.com" required />
+    </div>
+  </div>
+
+  <div class="form-section-title">Інформація про бізнес</div>
+
+  <div class="form-row form-two-cols">
+    <div>
+      <label for="pa-city">Місто</label>
+      <select id="pa-city" name="city" required>
+        <option value="">Оберіть місто</option>
+        <option value="ivano-frankivsk">Івано-Франківськ</option>
+        <option value="lviv">Львів</option>
+                    <option value="chernivtsi">Чернівці</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="pa-planned-locations-count">Кількість закладів</label>
+      <input id="pa-planned-locations-count" name="planned_locations_count" type="number" min="1" step="1" value="1"
+        required />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <label for="pa-verification-link">Посилання на Instagram / сайт / Google Maps</label>
+    <input id="pa-verification-link" name="verification_link" type="text"
+      placeholder="https://instagram.com/... або https://maps.google.com/..." required />
+  </div>
+
+  <div class="form-row">
+    <label for="pa-edrpou-or-ipn">ЄДРПОУ / ІПН</label>
+    <input id="pa-edrpou-or-ipn" name="edrpou_or_ipn" type="text" placeholder="Наприклад: 12345678" required />
+  </div>
+
+  <div class="form-row">
+    <label for="pa-business-description">Короткий опис бізнесу</label>
+    <textarea id="pa-business-description" name="business_description" rows="5"
+      placeholder="Коротко опишіть ваш бренд, формат роботи, тип кухні або особливості бізнесу" required></textarea>
+  </div>
+
+  <div class="form-section-title">Юридичні моменти</div>
+
+  <div class="form-row partner-checkboxes">
+    <label class="partner-check">
+      <input type="checkbox" id="pa-personal-data-agreement" required />
+      <span>Я даю згоду на обробку персональних даних</span>
+    </label>
+
+    <label class="partner-check">
+      <input type="checkbox" id="pa-representation-agreement" required />
+      <span>Я підтверджую, що маю право представляти бренд / заклад</span>
+    </label>
+  </div>
+
+  <button type="submit" class="btn btn-primary">
+    Надіслати заявку на співпрацю
+  </button>
+
+  <p id="pa-result" class="form-hint"></p>
+</form>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script defer src="{{ url_for('static', filename='js/partner-apply.js') }}"></script>
+{% endblock %}

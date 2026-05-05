@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}{{ restaurant.name }} – Меню{% endblock %}
+{% block body_data %}{{ restaurant.id }}{% endblock %}
+
+{% block content %}
+<section class="restaurant-header">
+  {% set restaurant_description = restaurant.description or "Смачні страви з цього закладу." %}
+  {% set restaurant_city = restaurant.city or "Місто не вказано" %}
+  {% set restaurant_eta = restaurant.eta or "Час доставки уточнюється" %}
+  {% set restaurant_rating = (restaurant.rating ~ "★") if restaurant.rating is not none else "Ще немає оцінок" %}
+
+  <div class="restaurant-title-row">
+    <h1 class="restaurant-title">{{ restaurant.name }}</h1>
+    <a
+      href="{{ url_for('restaurant.toggle_favorite_restaurant_fallback', restaurant_id=restaurant.id) }}"
+      class="favorite-btn favorite-btn--inline"
+      role="button"
+      data-restaurant-id="{{ restaurant.id }}"
+      aria-pressed="{{ 'true' if is_favorite else 'false' }}"
+      aria-label="{{ 'Remove from favorites' if is_favorite else 'Add to favorites' }}"
+    ></a>
+  </div>
+  <p class="restaurant-meta">
+    {{ restaurant_description }} · {{ restaurant_city }} · {{ restaurant_eta }} · {{ restaurant_rating }}
+  </p>
+</section>
+
+<section class="menu-grid">
+  <div class="menu-section">
+    <h2 class="section-title">Меню</h2>
+    <div class="menu-items" id="menu-items">
+      {# JS підтягує /api/restaurants/<id>/menu #}
+    </div>
+  </div>
+
+  <aside class="cart" id="cart">
+    {# Кошик заповнюється JS #}
+  </aside>
+</section>
+{% endblock %}
+{% block scripts %}
+<script defer src="{{ url_for('static', filename='js/restaurant.js') }}"></script>
+{% endblock %}

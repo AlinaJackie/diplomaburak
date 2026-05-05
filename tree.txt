@@ -1,0 +1,110 @@
+.
+├── admin
+│   ├── analytics.py
+│   ├── common.py
+│   ├── __init__.py
+│   ├── orders.py
+│   ├── pages.py
+│   ├── partner_applications.py
+│   └── restaurants.py
+├── app.py
+├── auth
+│   └── access.py
+├── auth_routes.py
+├── cart_routes.py
+├── config.py
+├── constants.py
+├── db_bootstrap.py
+├── extensions.py
+├── foodgo.db
+├── mail_utils.py
+├── make_admin.py
+├── migrations
+├── models.py
+├── order_routes.py
+├── partner_panel
+│   ├── analytics.py
+│   ├── __init__.py
+│   ├── menu.py
+│   ├── orders.py
+│   └── restaurants.py
+├── partner_routes.py
+├── profile_routes.py
+├── restaurant_routes.py
+├── serializers
+│   ├── order_serializers.py
+│   ├── profile_serializers.py
+│   └── restaurant_serializers.py
+├── services
+│   ├── admin_service.py
+│   ├── auth_service.py
+│   ├── file_service.py
+│   ├── __init__.py
+│   ├── notification_service.py
+│   ├── order_service.py
+│   ├── partner_service.py
+│   └── profile_service.py
+├── static
+│   ├── js
+│   │   ├── admin.js
+│   │   ├── api.js
+│   │   ├── auth.js
+│   │   ├── checkout.js
+│   │   ├── favorites.js
+│   │   ├── forgot-password.js
+│   │   ├── home.js
+│   │   ├── mobile-nav.js
+│   │   ├── my-orders.js
+│   │   ├── partner-apply.js
+│   │   ├── partner-dashboard.js
+│   │   ├── profile.js
+│   │   ├── reset-password.js
+│   │   ├── restaurant.js
+│   │   └── theme.js
+│   ├── style.css
+│   └── uploads
+│       ├── menu
+│       └── restaurants
+├── templates
+│   ├── admin.html
+│   ├── auth.html
+│   ├── base.html
+│   ├── checkout.html
+│   ├── forgot_password.html
+│   ├── index.html
+│   ├── my_orders.html
+│   ├── partner_apply.html
+│   ├── partner_dashboard.html
+│   ├── partner_status.html
+│   ├── profile.html
+│   ├── reset_password.html
+│   ├── reset_password_invalid.html
+│   └── restaurant.html
+├── test_scenarios.py
+└── validators
+    ├── auth_validators.py
+    ├── __init__.py
+    ├── order_validators.py
+    ├── partner_validators.py
+    ├── profile_validators.py
+    └── restaurant_validators.py
+
+
+.
+├── admin/                  # Адмінка: аналітика, заявки, керування замовленнями
+├── partner_panel/          # Кабінет партнера: меню та замовлення закладу
+├── services/               # Бізнес-логіка: обробка замовлень, файлів, сповіщень
+├── validators/             # Валідація: перевірка вхідних даних (auth, orders)
+├── serializers/            # Серіалізація: перетворення об'єктів БД у JSON для API
+├── static/                 # Фронтенд: JS-модулі (auth, checkout), CSS та фото
+├── templates/              # Шаблони: Jinja2 сторінки (admin, auth, profile)
+├── utils/ & validators/    # Допоміжні функції та перевірка форматів даних
+├── app.py                  # Точка входу: ініціалізація Flask (App Factory)
+├── models.py               # База даних: ORM моделі (User, Restaurant, Order тощо)
+├── extensions.py           # Конфіг розширень: DB, Mail, LoginManager, CSRF
+├── config.py               # Налаштування: ключі доступу та параметри сервера
+├── auth_routes.py          # Маршрути: логіка входу та реєстрації
+├── restaurant_routes.py    # Маршрути: каталог та сторінки ресторанів
+├── order_routes.py         # Маршрути: створення та історія замовлень
+├── profile_routes.py       # Маршрути: особистий кабінет та налаштування
+└── requirements.txt        # Список залежностей для розгортання проєкту

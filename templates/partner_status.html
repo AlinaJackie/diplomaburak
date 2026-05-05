@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Статус заявки{% endblock %}
+
+{% block content %}
+<h1>Статус заявки на співпрацю</h1>
+
+{% if not app_obj %}
+<div class="status-card">
+  <p class="status-text">
+    Ви ще не подавали заявку на співпрацю.
+  </p>
+
+  <div class="status-action">
+    <a href="{{ url_for('partner.partner_apply_page') }}" class="btn btn-primary">
+      Подати заявку
+    </a>
+  </div>
+</div>
+{% else %}
+<div class="status-card">
+  <p><strong>Контактна особа:</strong> {{ app_obj.contact_person }}</p>
+  <p><strong>Бренд / мережа / заклад:</strong> {{ app_obj.brand_name }}</p>
+  <p><strong>Місто:</strong> {{ app_obj.city }}</p>
+  <p><strong>Статус:</strong>
+    {% if app_obj.status == 'pending' %}
+      Очікує модерації
+    {% elif app_obj.status == 'approved' %}
+      Схвалено
+    {% elif app_obj.status == 'rejected' %}
+      Відхилено
+    {% else %}
+      {{ app_obj.status }}
+    {% endif %}
+  </p>
+
+  {% if app_obj.status == 'approved' %}
+    <p>
+      Вашу заявку схвалено. Тепер ви можете перейти до кабінету партнера та додавати свої заклади.
+    </p>
+    <p>
+      <a href="{{ url_for('partner.partner_dashboard') }}">Перейти в кабінет партнера</a>
+    </p>
+  {% elif app_obj.status == 'pending' %}
+    <p>
+      Дякуємо за заявку. Після первинної перевірки менеджер FoodGo зв’яжеться з вами для уточнення деталей співпраці.
+    </p>
+  {% elif app_obj.status == 'rejected' %}
+    <p>
+      На жаль, заявку відхилено. За потреби ви можете подати її повторно з оновленими даними.
+    </p>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

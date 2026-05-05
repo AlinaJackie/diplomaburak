@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Адмін панель{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-title">Адмін</div>
+
+    <nav class="admin-nav">
+      <a href="#" id="tab-admin-overview-link" class="admin-nav-link active">Огляд</a>
+      <a href="#" id="tab-admin-orders-link" class="admin-nav-link">Замовлення</a>
+      <a href="#" id="tab-admin-partners-link" class="admin-nav-link">Заявки партнерів</a>
+      <a href="#" id="tab-admin-restaurants-link" class="admin-nav-link">Ресторани</a>
+      <a href="{{ url_for('restaurant.home_page') }}" class="admin-nav-link">На сайт</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <section id="tab-admin-overview" class="admin-section">
+      <h1 class="admin-page-title">Адмін панель</h1>
+
+      <div class="admin-overview admin-overview--dashboard">
+        <!-- Верхній ряд -->
+        <div class="admin-stats-grid admin-stats-grid--summary">
+          <div class="admin-stat-card">
+            <div class="admin-stat-label">Всього замовлень</div>
+            <div class="admin-stat-value">{{ orders|length }}</div>
+          </div>
+
+          <div class="admin-stat-card">
+            <div class="admin-stat-label">Нові заявки</div>
+            <div class="admin-stat-value" id="admin-pending-count">—</div>
+          </div>
+
+          <div class="admin-stat-card">
+            <div class="admin-stat-label">Активні ресторани</div>
+            <div class="admin-stat-value" id="admin-restaurants-count">—</div>
+          </div>
+
+          <div class="admin-stat-card">
+            <div class="admin-stat-label">Стан системи</div>
+            <div class="admin-stat-value admin-ok">Онлайн</div>
+          </div>
+        </div>
+
+        <!-- Другий ряд -->
+        <div class="admin-stats-grid admin-stats-grid--secondary">
+          <div class="admin-stat-card">
+            <div class="admin-stat-label">Кількість партнерів</div>
+            <div class="admin-stat-value" id="admin-partners-count">0</div>
+          </div>
+
+          <div class="admin-stat-card">
+            <div class="admin-stat-label">Кількість заявок</div>
+            <div class="admin-stat-value" id="admin-applications-count">0</div>
+          </div>
+
+          <div class="admin-stat-card">
+            <div class="admin-stat-label">Активні замовлення</div>
+            <div class="admin-stat-value" id="admin-active-orders-count">0</div>
+          </div>
+
+          <div class="admin-stat-card">
+            <div class="admin-stat-label">Виконані замовлення</div>
+            <div class="admin-stat-value" id="admin-completed-orders-count">0</div>
+          </div>
+        </div>
+
+        <!-- Нижні великі блоки -->
+        <div class="admin-bottom-grid">
+          <div class="admin-info-card">
+            <h2 class="admin-card-title">Топ ресторанів за кількістю замовлень</h2>
+            <div id="admin-top-restaurants-list" class="analytics-list">
+              <div class="analytics-empty">Дані завантажуються...</div>
+            </div>
+          </div>
+
+          <div class="admin-info-card">
+            <h2 class="admin-card-title">Що можна робити в адмінці</h2>
+            <p class="admin-card-text">
+              Перевіряйте заявки партнерів, модеруйте доступ до платформи,
+              переглядайте замовлення та контролюйте список ресторанів.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-admin-orders" class="admin-section is-initially-hidden">
+      <h2 class="admin-section-title">Замовлення</h2>
+
+      <div class="admin-table-card">
+        <table class="admin-table admin-table--orders">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Клієнт</th>
+              <th scope="col">Телефон</th>
+              <th scope="col">Ресторан</th>
+              <th scope="col">Сума</th>
+              <th scope="col">Статус</th>
+              <th scope="col">Час</th>
+            </tr>
+          </thead>
+          <tbody id="admin-orders-table-body">
+            {% for order in orders %}
+            <tr>
+              <td>{{ order.id }}</td>
+              <td>{{ order.customer_name }}</td>
+              <td>{{ order.phone }}</td>
+              <td>
+                {% if order.restaurant %}
+                {{ order.restaurant.name }}
+                {% else %}
+                —
+                {% endif %}
+              </td>
+              <td>{{ order.total_price }} грн</td>
+              <td>{{ order.status }}</td>
+              <td>
+                {% if order.created_at %}
+                {{ order.created_at.strftime('%d.%m.%Y %H:%M') }}
+                {% else %}
+                —
+                {% endif %}
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="7">Замовлень поки немає.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tab-admin-partners" class="admin-section is-initially-hidden">
+      <h2 class="admin-section-title">Заявки партнерів</h2>
+
+      <div class="admin-table-card">
+        <table class="admin-table admin-table--partners" id="admin-partners-table">
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Назва</th>
+              <th scope="col">Місто</th>
+              <th scope="col">Статус</th>
+              <th scope="col">Дія</th>
+              <th scope="col">Деталі</th>
+            </tr>
+          </thead>
+          <tbody id="admin-partners-table-body">
+            <tr>
+              <td colspan="6">Завантаження...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tab-admin-restaurants" class="admin-section is-initially-hidden">
+      <h2 class="admin-section-title">Ресторани</h2>
+
+      <div class="admin-table-card">
+        <table class="admin-table admin-table--restaurants" id="admin-restaurants-table">
+          <colgroup>
+            <col class="admin-col admin-col--id">
+            <col class="admin-col admin-col--name">
+            <col class="admin-col admin-col--city">
+            <col class="admin-col admin-col--categories">
+            <col class="admin-col admin-col--eta">
+            <col class="admin-col admin-col--image">
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Назва</th>
+              <th scope="col">Місто</th>
+              <th scope="col">Категорії</th>
+              <th scope="col">Час доставки</th>
+              <th scope="col">Фото</th>
+            </tr>
+          </thead>
+          <tbody id="admin-restaurants-table-body">
+            <tr>
+              <td colspan="6">Завантаження...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script defer src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Вхід / Реєстрація – FoodGo{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+  <div class="auth-box">
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" type="button">Вхід</button>
+      <button class="auth-tab" id="tab-register" type="button">Реєстрація</button>
+    </div>
+
+    <!-- ВХІД -->
+    <form id="form-login" novalidate>
+      <div class="form-row">
+        <label>Телефон або Email</label>
+        <input id="login-identifier" type="text" placeholder="+380XXXXXXXXX або you@example.com" required />
+        <small class="field-hint" id="login-identifier-hint"></small>
+      </div>
+
+      <div class="form-row">
+        <label>Пароль</label>
+        <input id="login-password" type="password" placeholder="••••••••" required />
+        <small class="field-hint" id="login-password-hint"></small>
+      </div>
+
+      <div class="form-row">
+        <button class="btn btn-primary btn-block" type="submit">
+          Увійти
+        </button>
+
+        <div class="forgot-password-link">
+          <a href="{{ url_for('auth.forgot_password_page') }}">Забули пароль?</a>
+        </div>
+      </div>
+    </form>
+
+    <!-- РЕЄСТРАЦІЯ -->
+    <form id="form-register" class="is-initially-hidden" novalidate>
+      <div class="form-row">
+        <label>Email</label>
+        <input id="reg-email" type="email" placeholder="you@example.com" required />
+        <small class="field-hint" id="reg-email-hint"></small>
+      </div>
+
+      <div class="form-row">
+        <label>Телефон</label>
+        <input id="reg-phone" type="text" placeholder="+380XXXXXXXXX" required />
+        <small class="field-hint" id="reg-phone-hint"></small>
+      </div>
+
+      <div class="form-row">
+        <label>Пароль</label>
+        <input id="reg-password" type="password" required />
+        <small class="field-hint" id="reg-password-hint"></small>
+      </div>
+
+      <div class="form-row">
+        <label>Підтвердження пароля</label>
+        <input id="reg-password2" type="password" required />
+        <small class="field-hint" id="reg-password2-hint"></small>
+      </div>
+
+      <div class="form-row">
+        <label>Ім’я та прізвище</label>
+        <input id="reg-fullname" type="text" required />
+        <small class="field-hint" id="reg-fullname-hint"></small>
+      </div>
+
+      <div class="form-row">
+        <label>Місто</label>
+        <select id="reg-city">
+          <option value="">Оберіть місто</option>
+          <option value="ivano-frankivsk">Івано-Франківськ</option>
+          <option value="lviv">Львів</option>
+          <option value="chernivtsi">Чернівці</option>
+        </select>
+      </div>
+
+      <div class="form-row form-two-cols">
+        <div>
+          <label>Вулиця</label>
+          <input id="reg-street" type="text" />
+          <small class="field-hint" id="reg-street-hint"></small>
+        </div>
+
+        <div>
+          <label>Будинок / квартира</label>
+          <input id="reg-house" type="text" />
+          <small class="field-hint" id="reg-house-hint"></small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>Додаткова інформація</label>
+        <textarea id="reg-extra"></textarea>
+      </div>
+
+      <div class="form-row">
+        <button class="btn btn-primary btn-block" type="submit">
+          Зареєструватися
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script defer src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}
